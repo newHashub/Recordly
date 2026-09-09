@@ -333,7 +333,9 @@ export function mapTimelineTimeToSourceTime(timeMs: number, clips: ClipRegion[])
 	}
 
 	for (const span of spans) {
-		if (roundedTimeMs < span.timelineStartMs || roundedTimeMs > span.timelineEndMs) {
+		// Half-open interval [timelineStartMs, timelineEndMs): a clip boundary
+		// belongs to the NEXT kept span, matching findClipAtTimelineTime.
+		if (roundedTimeMs < span.timelineStartMs || roundedTimeMs >= span.timelineEndMs) {
 			continue;
 		}
 

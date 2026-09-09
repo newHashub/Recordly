@@ -91,8 +91,12 @@ export function useClipRegionCommands({
 			const timelineStart = getClipTimelineStartMs(target, clipRegions);
 			const splitAt = Math.round(splitMs);
 			const splitOffset = splitAt - timelineStart;
-			const newSourceStart = Math.round(target.startMs + splitOffset * target.speed);
-			const left: ClipRegion = { ...target, id: leftId, endMs: newSourceStart };
+			const safeSpeed = Number.isFinite(target.speed) && target.speed > 0 ? target.speed : 1;
+			const newSourceStart = Math.round(target.startMs + splitOffset * safeSpeed);
+			// ClipRegion.endMs is the display end (= startMs + display duration), not
+			// the source end, so the left clip keeps exactly `splitOffset` of display
+			// time rather than inheriting the source-derived split point.
+			const left: ClipRegion = { ...target, id: leftId, endMs: target.startMs + splitOffset };
 			const right: ClipRegion = {
 				...target,
 				id: rightId,

@@ -134,6 +134,13 @@ describe("clip timeline mapping (ripple)", () => {
 		expect(mapTimelineTimeToSourceTime(5_000, clips)).toBe(8_000);
 	});
 
+	it("maps a clip boundary into the next kept span", () => {
+		// timeline 4_000 is the splice between clip-1 and clip-2; it must map to
+		// the next clip's source origin (6_000), not clip-1's source end (4_000).
+		expect(mapTimelineTimeToSourceTime(4_000, clips)).toBe(6_000);
+		expect(findClipAtTimelineTime(4_000, clips)?.id).toBe("clip-2");
+	});
+
 	it("clamps timeline positions that fall outside the compacted range", () => {
 		// far before first kept span → source origin of clip-1
 		expect(mapTimelineTimeToSourceTime(-100, clips)).toBe(0);
